@@ -52,4 +52,22 @@ router.get('/kingdoms', async ctx => {
   ctx.body = boundaries
 })
 
+// Respond with calculated area of kingdom, by id
+router.get('/kingdoms/:kid/size', async ctx => {
+  const kid = ctx.params.kid
+  const result = await database.getRegionSize(kid)
+  if (!result) { ctx.throw(404) }
+
+  // Convert response (in square meters) to square kilometers
+  const sqKm = result.size * (10 ** -6)
+  ctx.body = sqKm
+})
+
+// respond with the number of castles in the kingdom , by id
+router.get('/kingdoms/:id/castles', async ctx => {
+  const regionId = ctx.params.id
+  const result = await database.countCastles(regionId)
+  ctx.body = result ? result.count : ctx.throw(404)
+})
+
 module.exports = router

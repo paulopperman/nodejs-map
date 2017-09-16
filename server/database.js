@@ -38,5 +38,28 @@ module.exports = {
     FROM kingdoms;`
     const result = await client.query(boundaryQuery)
     return result.rows
-  }
+  },
+
+  /** Calculate the area of a given region by id */
+  getRegionSize: async (id) => {
+    const sizeQuery = `
+    SELECT ST_AREA(geog) as size
+    FROM kingdoms
+    WHERE gid = $1
+    LIMIT(1);`
+    const result = await client.query(sizeQuery, [ id ])
+    return result.rows[0]
+  },
+
+  /** Count castles in region, by id */
+  countCastles: async (regionId) => {
+    const countQuery = `
+    SELECT count(*)
+    FROM kingdoms, locations
+    WHERE ST_intersects(kingdoms.geog, locations.geog)
+    AND kingdoms.gid = $1
+    AND locations.type = 'Castle';`
+    const result = await client.query(countQuery, [regionId])
+    return result.rows[0]
+  },
 }
