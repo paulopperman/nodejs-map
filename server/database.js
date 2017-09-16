@@ -19,5 +19,24 @@ module.exports = {
   queryTime: async () => {
     const result = await client.query('SELECT NOW() as now')
     return result.rows[0]
+  },
+
+  /** Query the locations as geojson, for a given type, using ST_AsGeoJSON from PostGIS */
+  getLocations: async (type) => {
+    const locationQuery = `
+    SELECT ST_AsGeoJSON(geog), name, type, gid
+    FROM locations
+    WHERE UPPER(type) = UPPER($1);`
+    const result = await client.query(locationQuery, [ type ])
+    return result.rows
+  },
+
+  /** Query the kingdom boundaries */
+  getKingdomBoundaries: async () => {
+    const boundaryQuery = `
+    SELECT ST_AsGeoJSON(geog), name, gid
+    FROM kingdoms;`
+    const result = await client.query(boundaryQuery)
+    return result.rows
   }
 }
