@@ -62,4 +62,19 @@ module.exports = {
     const result = await client.query(countQuery, [regionId])
     return result.rows[0]
   },
+
+  /** Get the summary for a location or region, by id */
+  getSummary: async (table, id) => {
+    if(table !== 'kingdoms' && table !== 'locations') {
+      throw new Error(`Invalid Table - ${table}`)
+    }
+
+    const summaryQuery = `
+    SELECT summary, url
+    FROM ${table}
+    WHERE gid = $1
+    LIMIT(1);`
+    const result = await client.query(summaryQuery, [id])
+    return result.rows[0]
+  },
 }

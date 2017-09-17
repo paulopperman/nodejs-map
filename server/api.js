@@ -81,4 +81,18 @@ router.get('/kingdoms/:id/castles', idValidator, async ctx => {
   ctx.body = result ? result.count : ctx.throw(404)
 })
 
+// Respond with summary of kingdom, by id
+router.get('/kingdoms/:id/summary', idValidator, async ctx => {
+  const id = ctx.params.id
+  const result  = await database.getSummary('kingdoms', id)
+  ctx.body = result || ctx.throw(404)
+})
+
+// respond with summary of location, by id
+router.get('/locations/:id/summary', idValidator, async ctx => {
+  const id = ctx.params.id
+  const result = await database.getSummary('locations', id)
+  ctx.body = result || ctx.throw(404)
+})
+
 module.exports = router
