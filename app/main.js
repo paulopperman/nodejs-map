@@ -1,8 +1,11 @@
+import './main.scss'
+import template from './main.html'
+
 /** Main UI Controller Class */
 class ViewController {
   /** Initialize application */
   constructor () {
-    console.log('hello world')
+    document.getElementById('app').outerHTML = template
   }
 }
 
