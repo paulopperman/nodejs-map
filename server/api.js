@@ -70,9 +70,9 @@ router.get('/kingdoms', async ctx => {
 })
 
 // Respond with calculated area of kingdom, by id
-router.get('/kingdoms/:kid/size', idValidator, async ctx => {
-  const kid = ctx.params.kid
-  const result = await database.getRegionSize(kid)
+router.get('/kingdoms/:id/size', idValidator, async ctx => {
+  const id = ctx.params.id
+  const result = await database.getRegionSize(id)
   if (!result) { ctx.throw(404) }
 
   // Convert response (in square meters) to square kilometers
