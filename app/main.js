@@ -1,6 +1,7 @@
 import './main.scss'
 import template from './main.html'
 
+import { Map } from './components/map/map'
 import { InfoPanel } from './components/info-panel/info-panel'
 
 /** Main UI Controller Class */
@@ -13,8 +14,11 @@ class ViewController {
 
   /** Initialize Components with data and event listeners */
   initializeComponents () {
+
     // Initialize Info Panel
     this.infoComponent = new InfoPanel('info-panel-placeholder')
+    // Initialize Map
+    this.mapComponent = new Map('map-placeholder')
   }
 }
 
