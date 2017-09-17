@@ -13,8 +13,8 @@ const babelLoader = {
 
 // SCSS loader for transpilig SCSS files to CSS
 const scssLoader = {
-  test: /\.scss%/,
-  loader: 'style-loader!css-loder!sass-loader'
+  test: /\.scss$/,
+  loader: 'style-loader!css-loader!sass-loader'
 }
 
 // URL loader to resolve data-urls at build time
