@@ -10,6 +10,17 @@ const validate = require('koa-joi-validate')
 
 const router = new Router()
 
+// check that id parameter is valid number
+const idValidator = validate({
+  params: { id: joi.number().min(0).max(1000).required() }
+})
+
+// check that query parameter is a valid location type
+const validLocationList = ['castle', 'city', 'town', 'ruin', 'landmark', 'region']
+const typeValidator = validate({
+  params: { type: joi.string().valid(validLocationList).required() }
+})
+
 //Hello world test endpoint
 router.get('/hello', async ctx => {
   ctx.body = "Hello World"
@@ -22,7 +33,7 @@ router.get('/time', async ctx => {
 })
 
 // get locations as geojson
-router.get('/locations/:type', async ctx => {
+router.get('/locations/:type', typeValidator, async ctx => {
   const type = ctx.params.type
   const results = await database.getLocations(type)
   if (results.length === 0) {ctx.throw(404)}
@@ -53,7 +64,7 @@ router.get('/kingdoms', async ctx => {
 })
 
 // Respond with calculated area of kingdom, by id
-router.get('/kingdoms/:kid/size', async ctx => {
+router.get('/kingdoms/:kid/size', idValidator, async ctx => {
   const kid = ctx.params.kid
   const result = await database.getRegionSize(kid)
   if (!result) { ctx.throw(404) }
@@ -64,7 +75,7 @@ router.get('/kingdoms/:kid/size', async ctx => {
 })
 
 // respond with the number of castles in the kingdom , by id
-router.get('/kingdoms/:id/castles', async ctx => {
+router.get('/kingdoms/:id/castles', idValidator, async ctx => {
   const regionId = ctx.params.id
   const result = await database.countCastles(regionId)
   ctx.body = result ? result.count : ctx.throw(404)
