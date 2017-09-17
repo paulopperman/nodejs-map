@@ -35,4 +35,76 @@ export class Map extends Component {
       'https://cartocdn-ashbu.global.ssl.fastly.net/ramirocartodb/api/v1/map/named/tpl_756aec63_3adb_48b6_9d14_331c6cbc47cf/all/{z}/{x}/{y}.png',
       { crs: L.CRS.EPSG4326 }).addTo(this.map)
   }
+
+  /** Add location geojson to the leaflet instance*/
+  addLocationGeojson (layerTitle, geojson, iconUrl) {
+    // inialize new geojson layer
+    this.layers[layerTitle] = L.geoJSON(geojson, {
+      // Show marker on location
+      pointToLayer: (feature, latlng) => {
+        return L.marker(latlng, {
+          icon: L.icon({iconUrl, iconSize: [ 24, 56 ]}),
+          title: feature.properties.name
+        })
+      },
+      onEachFeature: this.onEachLocation.bind(this)
+    })
+  }
+
+  /** Assign Popup and click listener for each location point */
+  onEachLocation (feature, layer) {
+    // bind popup to marker
+    layer.bindPopup(feature.properties.name, { closeButton: false })
+    layer.on({ click: (e) => {
+      this.setHighlightedRegion(null) // deselect highlighted region
+      const { name, id, type } = feature.properties
+      this.triggerEvent('locationSelected', { name, id, type })
+    }})
+  }
+
+  /** Add boundary (kingdom) geojson to leaflet instance */
+  addKingdomGeojson (geojson) {
+    // initialize new geojson layer
+    this.layers.kingdom = L.geoJSON(geojson, {
+      //set layer Style
+      style: {
+        'color': '#222',
+        'weight': 1,
+        'opacity': 0.65
+      },
+      onEachFeature: this.onEachKingdom.bind(this)
+    })
+  }
+
+  onEachKingdom (feature, layer) {
+    layer.on({ click: (e) => {
+      const { name, id } = feature.properties
+      this.map.closePopup() // deselect selected location marker
+      this.setHighlightedRegion(layer) // highlight the kingdom polygon
+      this.triggerEvent('locationSelected', { name, id, type: 'kingdom'})
+    }})
+  }
+
+  /** Highlight the selected region */
+  setHighlightedRegion (layer) {
+    // if a layer is currently selected, deselect it
+    if (this.selected) {this.layers.kingdom.resetStyle(this.selected)}
+
+    // select the provided region layer
+    this.selected = layer
+    if (this.selected) {
+      this.selected.bringToFront()
+      this.selected.setStyle({ color : 'blue' })
+    }
+  }
+
+  /** Toggle map layer visibility */
+  toggleLayer (layerName) {
+    const layer = this.layers[layerName]
+    if (this.map.hasLayer(layer)) {
+      this.map.removeLayer(layer)
+    } else {
+      this.map.addLayer(layer)
+    }
+  }
 }
