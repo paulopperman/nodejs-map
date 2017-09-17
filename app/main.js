@@ -26,9 +26,17 @@ class ViewController {
   /** Initialize Components with data and event listeners */
   initializeComponents () {
     // Initialize Info Panel
-    this.infoComponent = new InfoPanel('info-panel-placeholder')
+    this.infoComponent = new InfoPanel('info-panel-placeholder', {
+      data: { apiService: this.api }
+    })
     // Initialize Map
-    this.mapComponent = new Map('map-placeholder')
+    this.mapComponent = new Map('map-placeholder', {
+      events:  { locationSelected: event => {
+        // show data in infoComponent on "locationSelected" event
+        const { name, id, type } = event.detail
+        this.infoComponent.showInfo(name, id, type)
+      }}
+    })
   }
 
   async loadMapData () {
