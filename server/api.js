@@ -10,6 +10,12 @@ const validate = require('koa-joi-validate')
 
 const router = new Router()
 
+// Check cache before continuing to endpoint handlers
+router.use(cache.checkResponseCache)
+
+// Insert response into cache once handlers have finished
+router.use(cache.addResponseToCache)
+
 // check that id parameter is valid number
 const idValidator = validate({
   params: { id: joi.number().min(0).max(1000).required() }
