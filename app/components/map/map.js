@@ -2,34 +2,33 @@ import './map.scss'
 import L from 'leaflet'
 import { Component } from '../component'
 
-// the template is so simple because of leaflet, so just put it in a string
 const template = '<div ref="mapContainer" class="map-container"></div>'
 
 /**
-* Leaflet Map Component
-* Render GoT map items, and provide user interactivity.
-* @extends Component
-**/
+ * Leaflet Map Component
+ * Render GoT map items, and provide user interactivity.
+ * @extends Component
+ */
 export class Map extends Component {
-  /** Map Component constructor
-  * @param { String } placeholderId Element ID to inflate the map into
-  * @param { Object } props.events.click Map item click listener
-  **/
+  /** Map Component Constructor
+   * @param { String } placeholderId Element ID to inflate the map into
+   * @param { Object } props.events.click Map item click listener
+   */
   constructor (mapPlaceholderId, props) {
     super(mapPlaceholderId, props, template)
 
-    // Initialize the leaflet map
+    // Initialize Leaflet map
     this.map = L.map(this.refs.mapContainer, {
-      center: [5, 20],
+      center: [ 5, 20 ],
       zoom: 4,
       maxZoom: 8,
       minZoom: 4,
-      maxBounds: [ [50, -30], [-45,100 ] ]
+      maxBounds: [ [ 50, -30 ], [ -45, 100 ] ]
     })
 
     this.map.zoomControl.setPosition('bottomright') // Position zoom control
-    this.layers = {} // map layer dict
-    this.selectedRegion = null // store currently selected region
+    this.layers = {} // Map layer dict (key/value = title/layer)
+    this.selectedRegion = null // Store currently selected region
 
     // Render Carto GoT tile baselayer
     L.tileLayer(

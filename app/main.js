@@ -14,7 +14,6 @@ class ViewController {
 
   /** Initialize Components with data and event listeners */
   initializeComponents () {
-
     // Initialize Info Panel
     this.infoComponent = new InfoPanel('info-panel-placeholder')
     // Initialize Map
