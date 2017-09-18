@@ -5,6 +5,8 @@ import { ApiService } from './services/api'
 import { Map } from './components/map/map'
 import { InfoPanel } from './components/info-panel/info-panel'
 import { LayerPanel } from './components/layer-panel/layer-panel'
+import { SearchService } from './services/search'
+import { SearchBar } from './components/search-bar/search-bar'
 
 /** Main UI Controller Class */
 class ViewController {
@@ -22,6 +24,7 @@ class ViewController {
     this.locationPointTypes = ['castle', 'city', 'town', 'ruin', 'region', 'landmark']
     this.initializeComponents()
     this.loadMapData()
+    this.searchService = new SearchService()
   }
 
   /** Initialize Components with data and event listeners */
@@ -47,11 +50,28 @@ class ViewController {
         event => {this.mapComponent.toggleLayer(event.detail) }
       }
     })
+
+    // Initialize search panel
+    this.searchBar = new SearchBar('search-panel-placehoder', {
+      data: { searchService: this.searchService },
+      events: { resultsSelected: event => {
+        // Show result on map when selected from search results
+        let searchResult = event.detail
+        if (!this.mapComponent.isLayerShowing(searchResult.layerName)) {
+          // show result layer if currently hidden
+          this.layerPanel.toggleMapLayer(searchResult.layerName)
+        }
+        this.mapCompnent.selectLocation(searchResult.id, searchResult.layerName)
+      }}
+    })
   }
 
   async loadMapData () {
     // download kingdom boundaries
     const kingdomsGeojson = await this.api.getKingdoms()
+
+    // add data to search service
+    this.searchService.addGeoJsonItems(kingdomGeojson, 'kingdom')
 
     // add data to map
     this.mapComponent.addKingdomGeojson(kingdomsGeojson)
@@ -63,6 +83,9 @@ class ViewController {
     for (let locationType of this.locationPointTypes) {
       // download GeoJSON and metadata
       const geojson = await this.api.getLocations(locationType)
+
+      // add location data to search service
+      this.searchService.addGeoJsonItems(geojson, locationType)
 
       // add data to map
       this.mapComponent.addLocationGeojson(locationType, geojson, this.getIconUrl(locationType))
